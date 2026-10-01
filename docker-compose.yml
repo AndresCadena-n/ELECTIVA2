@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=crud_usuarios
+      - DB_USERNAME=root
+      - DB_PASSWORD=1234567
+      - DB_TYPE=mysql
+      # Email env vars for overriding
+      - SMTP_USERNAME=tu_correo@gmail.com
+      - SMTP_PASSWORD=tu_app_password_aqui
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:9.0
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234567
+      - MYSQL_DATABASE=crud_usuarios
+    volumes:
+      - mysql-data:/var/lib/mysql
+      # To initialize the schema automatically:
+      - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - app-network
+
+  # Para probar con PostgreSQL, cambiar DB_HOST a postgres, DB_PORT a 5432, y DB_TYPE a postgres en app
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=1234567
+      - POSTGRES_USER=root
+      - POSTGRES_DB=crud_usuarios
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./src/main/resources/schema-postgres.sql:/docker-entrypoint-initdb.d/schema-postgres.sql
+    networks:
+      - app-network
+
+volumes:
+  mysql-data:
+  postgres-data:
+
+networks:
+  app-network:
+    driver: bridge

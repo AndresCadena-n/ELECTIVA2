@@ -1,0 +1,46 @@
+services:
+  - type: web
+    name: users-management-api
+    env: docker
+    region: ohio
+    plan: free
+    healthCheckPath: /swagger-ui/index.html
+    envVars:
+      - key: DB_TYPE
+        value: postgres
+      - key: DB_HOST
+        fromDatabase:
+          name: users-management-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: users-management-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: users-management-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: users-management-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: users-management-db
+          property: password
+      - key: SMTP_USERNAME
+        value: "dacf540a1e8082" 
+      - key: SMTP_PASSWORD
+        value: "6f5911e449217e" 
+      - key: SMTP_HOST
+        value: "sandbox.smtp.mailtrap.io"  
+      - key: SMTP_PORT
+        value: 2525
+      - key: JWT_SECRET
+        generateValue: true
+
+databases:
+  - name: users-management-db
+    plan: free
+    region: ohio
+    postgresMajorVersion: 16
