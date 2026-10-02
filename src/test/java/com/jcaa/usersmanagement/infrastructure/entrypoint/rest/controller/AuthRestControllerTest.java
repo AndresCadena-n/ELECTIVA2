@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.jcaa.usersmanagement.application.port.in.LoginUseCase;
+import com.jcaa.usersmanagement.application.port.in.LoginCuentaUseCase;
 import com.jcaa.usersmanagement.application.service.dto.command.LoginCommand;
 import com.jcaa.usersmanagement.domain.enums.UserRole;
 import com.jcaa.usersmanagement.domain.enums.UserStatus;
@@ -27,7 +27,7 @@ class AuthRestControllerTest {
   private static final String EMAIL = "test@example.com";
   private static final String PASSWORD = "SecurePass1";
 
-  @Mock private LoginUseCase loginUseCase;
+  @Mock private LoginCuentaUseCase LoginCuentaUseCase;
   @Mock private JwtTokenService jwtTokenService;
 
   @Test
@@ -35,10 +35,10 @@ class AuthRestControllerTest {
     // Arrange
     final UserModel user = activeUser();
     final LoginCommand command = new LoginCommand(EMAIL, PASSWORD);
-    when(loginUseCase.execute(command)).thenReturn(user);
+    when(LoginCuentaUseCase.execute(command)).thenReturn(user);
     when(jwtTokenService.generate(user)).thenReturn("signed.jwt.token");
     when(jwtTokenService.expirationSeconds()).thenReturn(900L);
-    final AuthRestController controller = new AuthRestController(loginUseCase, jwtTokenService);
+    final AuthRestController controller = new AuthRestController(LoginCuentaUseCase, jwtTokenService);
 
     // Act
     final LoginRestResponse response =
@@ -48,7 +48,7 @@ class AuthRestControllerTest {
     assertThat(response.accessToken()).isEqualTo("signed.jwt.token");
     assertThat(response.tokenType()).isEqualTo("Bearer");
     assertThat(response.expiresIn()).isEqualTo(900L);
-    verify(loginUseCase).execute(command);
+    verify(LoginCuentaUseCase).execute(command);
   }
 
   private static UserModel activeUser() {

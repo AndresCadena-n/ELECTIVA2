@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.jcaa.usersmanagement.application.port.out.GetUserByEmailPort;
+import com.jcaa.usersmanagement.application.port.out.ObtenerCuentaPorEmailPort;
 import com.jcaa.usersmanagement.application.service.dto.command.LoginCommand;
 import com.jcaa.usersmanagement.domain.enums.UserRole;
 import com.jcaa.usersmanagement.domain.enums.UserStatus;
@@ -35,7 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class LoginServiceTest {
 
-  @Mock private GetUserByEmailPort getUserByEmailPort;
+  @Mock private ObtenerCuentaPorEmailPort ObtenerCuentaPorEmailPort;
 
   private LoginService service;
 
@@ -45,7 +45,7 @@ class LoginServiceTest {
   @BeforeEach
   void setUp() {
     try (final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory()) {
-      service = new LoginService(getUserByEmailPort, validatorFactory.getValidator());
+      service = new LoginService(ObtenerCuentaPorEmailPort, validatorFactory.getValidator());
     }
   }
 
@@ -66,7 +66,7 @@ class LoginServiceTest {
             UserRole.ADMIN,
             UserStatus.ACTIVE);
 
-    when(getUserByEmailPort.getByEmail(any())).thenReturn(Optional.of(activeUser));
+    when(ObtenerCuentaPorEmailPort.getByEmail(any())).thenReturn(Optional.of(activeUser));
 
     // Act
     final UserModel result = service.execute(command);
@@ -83,7 +83,7 @@ class LoginServiceTest {
     // Arrange
     final LoginCommand command = new LoginCommand(EMAIL, PASSWORD);
 
-    when(getUserByEmailPort.getByEmail(any())).thenReturn(Optional.empty());
+    when(ObtenerCuentaPorEmailPort.getByEmail(any())).thenReturn(Optional.empty());
 
     // Act & Assert
     assertThrows(InvalidCredentialsException.class, () -> service.execute(command));
@@ -106,7 +106,7 @@ class LoginServiceTest {
             UserRole.MEMBER,
             UserStatus.ACTIVE);
 
-    when(getUserByEmailPort.getByEmail(any())).thenReturn(Optional.of(user));
+    when(ObtenerCuentaPorEmailPort.getByEmail(any())).thenReturn(Optional.of(user));
 
     // Act & Assert
     assertThrows(InvalidCredentialsException.class, () -> service.execute(command));
@@ -129,7 +129,7 @@ class LoginServiceTest {
             UserRole.MEMBER,
             UserStatus.PENDING);
 
-    when(getUserByEmailPort.getByEmail(any())).thenReturn(Optional.of(pendingUser));
+    when(ObtenerCuentaPorEmailPort.getByEmail(any())).thenReturn(Optional.of(pendingUser));
 
     // Act & Assert
     assertThrows(InvalidCredentialsException.class, () -> service.execute(command));
@@ -146,6 +146,6 @@ class LoginServiceTest {
 
     // Act & Assert
     assertThrows(ConstraintViolationException.class, () -> service.execute(command));
-    verifyNoInteractions(getUserByEmailPort);
+    verifyNoInteractions(ObtenerCuentaPorEmailPort);
   }
 }

@@ -10,12 +10,12 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.jcaa.usersmanagement.application.port.in.CreateUserUseCase;
-import com.jcaa.usersmanagement.application.port.in.DeleteUserUseCase;
-import com.jcaa.usersmanagement.application.port.in.GetAllUsersUseCase;
-import com.jcaa.usersmanagement.application.port.in.GetUserByIdUseCase;
-import com.jcaa.usersmanagement.application.port.in.LoginUseCase;
-import com.jcaa.usersmanagement.application.port.in.UpdateUserUseCase;
+import com.jcaa.usersmanagement.application.port.in.CrearCuentaUseCase;
+import com.jcaa.usersmanagement.application.port.in.EliminarCuentaUseCase;
+import com.jcaa.usersmanagement.application.port.in.ObtenerTodasLasCuentasUseCase;
+import com.jcaa.usersmanagement.application.port.in.ObtenerCuentaPorIdUseCase;
+import com.jcaa.usersmanagement.application.port.in.LoginCuentaUseCase;
+import com.jcaa.usersmanagement.application.port.in.ActualizarCuentaUseCase;
 import com.jcaa.usersmanagement.application.service.dto.command.CreateUserCommand;
 import com.jcaa.usersmanagement.application.service.dto.command.DeleteUserCommand;
 import com.jcaa.usersmanagement.application.service.dto.command.LoginCommand;
@@ -58,12 +58,12 @@ class UserControllerTest {
   private static final String BCRYPT_HASH =
       "$2a$12$abcdefghijklmnopqrstabcdefghijklmnñopqrstuvwxyzabcdefgh";
 
-  @Mock private CreateUserUseCase createUserUseCase;
-  @Mock private UpdateUserUseCase updateUserUseCase;
-  @Mock private DeleteUserUseCase deleteUserUseCase;
-  @Mock private GetUserByIdUseCase getUserByIdUseCase;
-  @Mock private GetAllUsersUseCase getAllUsersUseCase;
-  @Mock private LoginUseCase loginUseCase;
+  @Mock private CrearCuentaUseCase CrearCuentaUseCase;
+  @Mock private ActualizarCuentaUseCase ActualizarCuentaUseCase;
+  @Mock private EliminarCuentaUseCase EliminarCuentaUseCase;
+  @Mock private ObtenerCuentaPorIdUseCase ObtenerCuentaPorIdUseCase;
+  @Mock private ObtenerTodasLasCuentasUseCase ObtenerTodasLasCuentasUseCase;
+  @Mock private LoginCuentaUseCase LoginCuentaUseCase;
 
   private UserController controller;
 
@@ -88,12 +88,12 @@ class UserControllerTest {
   void setUp() {
     controller =
         new UserController(
-            createUserUseCase,
-            updateUserUseCase,
-            deleteUserUseCase,
-            getUserByIdUseCase,
-            getAllUsersUseCase,
-            loginUseCase);
+            CrearCuentaUseCase,
+            ActualizarCuentaUseCase,
+            EliminarCuentaUseCase,
+            ObtenerCuentaPorIdUseCase,
+            ObtenerTodasLasCuentasUseCase,
+            LoginCuentaUseCase);
   }
 
   // ── listAllUsers
@@ -105,7 +105,7 @@ class UserControllerTest {
     // Arrange
     final UserModel user =
         buildUser("u-001", "Alice Smith", "alice@example.com", UserRole.ADMIN, UserStatus.ACTIVE);
-    when(getAllUsersUseCase.execute()).thenReturn(List.of(user));
+    when(ObtenerTodasLasCuentasUseCase.execute()).thenReturn(List.of(user));
 
     // Act
     final List<UserResponse> result = controller.listAllUsers();
@@ -119,21 +119,21 @@ class UserControllerTest {
         () -> assertEquals("alice@example.com", result.get(0).email(), "email must match"),
         () -> assertEquals("ADMIN", result.get(0).role(), "role must match enum name"),
         () -> assertEquals("ACTIVE", result.get(0).status(), "status must match enum name"));
-    verify(getAllUsersUseCase).execute();
+    verify(ObtenerTodasLasCuentasUseCase).execute();
   }
 
   @Test
   @DisplayName("listAllUsers() returns an empty list when the use case returns no users")
   void listAllUsers_returnsEmptyList_whenNoUsersExist() {
     // Arrange
-    when(getAllUsersUseCase.execute()).thenReturn(List.of());
+    when(ObtenerTodasLasCuentasUseCase.execute()).thenReturn(List.of());
 
     // Act
     final List<UserResponse> result = controller.listAllUsers();
 
     // Assert
     assertTrue(result.isEmpty(), "result must be an empty list");
-    verify(getAllUsersUseCase).execute();
+    verify(ObtenerTodasLasCuentasUseCase).execute();
   }
 
   // ── findUserById
@@ -145,7 +145,7 @@ class UserControllerTest {
     // Arrange
     final UserModel user =
         buildUser("u-002", "Bob Jones", "bob@example.com", UserRole.MEMBER, UserStatus.ACTIVE);
-    when(getUserByIdUseCase.execute(new GetUserByIdQuery("u-002"))).thenReturn(user);
+    when(ObtenerCuentaPorIdUseCase.execute(new GetUserByIdQuery("u-002"))).thenReturn(user);
 
     // Act
     final UserResponse result = controller.findUserById("u-002");
@@ -165,7 +165,7 @@ class UserControllerTest {
       "findUserById() propagates UserNotFoundException when the use case cannot find the user")
   void findUserById_propagatesUserNotFoundException_whenUserDoesNotExist() {
     // Arrange
-    when(getUserByIdUseCase.execute(new GetUserByIdQuery("u-999")))
+    when(ObtenerCuentaPorIdUseCase.execute(new GetUserByIdQuery("u-999")))
         .thenThrow(UserNotFoundException.becauseIdWasNotFound("u-999"));
 
     // Act & Assert
@@ -189,7 +189,7 @@ class UserControllerTest {
             "u-003", "Carol White", "carol@example.com", UserRole.REVIEWER, UserStatus.PENDING);
     final ArgumentCaptor<CreateUserCommand> captor =
         ArgumentCaptor.forClass(CreateUserCommand.class);
-    when(createUserUseCase.execute(captor.capture())).thenReturn(createdUser);
+    when(CrearCuentaUseCase.execute(captor.capture())).thenReturn(createdUser);
 
     // Act
     final UserResponse result = controller.createUser(request);
@@ -233,7 +233,7 @@ class UserControllerTest {
     // Arrange
     final CreateUserRequest request =
         new CreateUserRequest("u-004", "Dave Brown", "dave@example.com", "Pass5678", "MEMBER");
-    when(createUserUseCase.execute(any()))
+    when(CrearCuentaUseCase.execute(any()))
         .thenThrow(UserAlreadyExistsException.becauseEmailAlreadyExists("dave@example.com"));
 
     // Act & Assert
@@ -257,7 +257,7 @@ class UserControllerTest {
         buildUser("u-005", "Eve Martinez", "eve@example.com", UserRole.ADMIN, UserStatus.ACTIVE);
     final ArgumentCaptor<UpdateUserCommand> captor =
         ArgumentCaptor.forClass(UpdateUserCommand.class);
-    when(updateUserUseCase.execute(captor.capture())).thenReturn(updatedUser);
+    when(ActualizarCuentaUseCase.execute(captor.capture())).thenReturn(updatedUser);
 
     // Act
     final UserResponse result = controller.updateUser(request);
@@ -302,7 +302,7 @@ class UserControllerTest {
     final UpdateUserRequest request =
         new UpdateUserRequest(
             "u-999", "Ghost User", "ghost@example.com", "Pass9999!", "MEMBER", "INACTIVE");
-    when(updateUserUseCase.execute(any()))
+    when(ActualizarCuentaUseCase.execute(any()))
         .thenThrow(UserNotFoundException.becauseIdWasNotFound("u-999"));
 
     // Act & Assert
@@ -320,7 +320,7 @@ class UserControllerTest {
     // Arrange
     final ArgumentCaptor<DeleteUserCommand> captor =
         ArgumentCaptor.forClass(DeleteUserCommand.class);
-    doNothing().when(deleteUserUseCase).execute(captor.capture());
+    doNothing().when(EliminarCuentaUseCase).execute(captor.capture());
 
     // Act
     controller.deleteUser("u-006");
@@ -335,7 +335,7 @@ class UserControllerTest {
   void deleteUser_propagatesUserNotFoundException_whenUserDoesNotExist() {
     // Arrange
     doThrow(UserNotFoundException.becauseIdWasNotFound("u-999"))
-        .when(deleteUserUseCase)
+        .when(EliminarCuentaUseCase)
         .execute(any());
 
     // Act & Assert
@@ -356,7 +356,7 @@ class UserControllerTest {
     final UserModel loggedUser =
         buildUser("u-007", "Frank Green", "frank@example.com", UserRole.MEMBER, UserStatus.ACTIVE);
     final ArgumentCaptor<LoginCommand> captor = ArgumentCaptor.forClass(LoginCommand.class);
-    when(loginUseCase.execute(captor.capture())).thenReturn(loggedUser);
+    when(LoginCuentaUseCase.execute(captor.capture())).thenReturn(loggedUser);
 
     // Act
     final UserResponse result = controller.login(request);
@@ -395,7 +395,7 @@ class UserControllerTest {
   void login_propagatesInvalidCredentialsException_whenCredentialsAreInvalid() {
     // Arrange
     final LoginRequest request = new LoginRequest("frank@example.com", "WrongPass1");
-    when(loginUseCase.execute(any()))
+    when(LoginCuentaUseCase.execute(any()))
         .thenThrow(InvalidCredentialsException.becauseCredentialsAreInvalid());
 
     // Act & Assert

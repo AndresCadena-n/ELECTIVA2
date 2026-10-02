@@ -1,11 +1,11 @@
 package com.jcaa.usersmanagement.infrastructure.adapter.persistence.repository;
 
-import com.jcaa.usersmanagement.application.port.out.DeleteUserPort;
-import com.jcaa.usersmanagement.application.port.out.GetAllUsersPort;
-import com.jcaa.usersmanagement.application.port.out.GetUserByEmailPort;
-import com.jcaa.usersmanagement.application.port.out.GetUserByIdPort;
+import com.jcaa.usersmanagement.application.port.out.EliminarCuentaPort;
+import com.jcaa.usersmanagement.application.port.out.ObtenerTodasLasCuentasPort;
+import com.jcaa.usersmanagement.application.port.out.ObtenerCuentaPorEmailPort;
+import com.jcaa.usersmanagement.application.port.out.ObtenerCuentaPorIdPort;
 import com.jcaa.usersmanagement.application.port.out.GuardarCuentaPort;
-import com.jcaa.usersmanagement.application.port.out.UpdateUserPort;
+import com.jcaa.usersmanagement.application.port.out.ActualizarCuentaPort;
 import com.jcaa.usersmanagement.domain.exception.UserNotFoundException;
 import com.jcaa.usersmanagement.domain.model.UserModel;
 import com.jcaa.usersmanagement.domain.valueobject.UserEmail;
@@ -32,38 +32,38 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AdaptadorPostgres
     implements GuardarCuentaPort,
-        UpdateUserPort,
-        GetUserByIdPort,
-        GetUserByEmailPort,
-        GetAllUsersPort,
-        DeleteUserPort {
+        ActualizarCuentaPort,
+        ObtenerCuentaPorIdPort,
+        ObtenerCuentaPorEmailPort,
+        ObtenerTodasLasCuentasPort,
+        EliminarCuentaPort {
 
   private static final String SQL_INSERT =
-      "INSERT INTO cuentas_app "
+      "INSERT INTO electiva2 "
       + "(id, name, email, password, role, status, created_at, updated_at) "
       + "VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
   private static final String SQL_UPDATE =
-      "UPDATE cuentas_app SET name = ?, email = ?, password = ?, role = ?, status = ?, updated_at = NOW() "
+      "UPDATE electiva2 SET name = ?, email = ?, password = ?, role = ?, status = ?, updated_at = NOW() "
       + "WHERE id = ?";
 
   private static final String SQL_SELECT_BY_ID =
       "SELECT id, name, email, password, role, status, created_at, updated_at "
-      + "FROM cuentas_app "
+      + "FROM electiva2 "
       + "WHERE id = ? LIMIT 1";
 
   private static final String SQL_SELECT_BY_EMAIL =
       "SELECT id, name, email, password, role, status, created_at, updated_at "
-      + "FROM cuentas_app "
+      + "FROM electiva2 "
       + "WHERE email = ? LIMIT 1";
 
   private static final String SQL_SELECT_ALL =
       "SELECT id, name, email, password, role, status, created_at, updated_at "
-      + "FROM cuentas_app "
+      + "FROM electiva2 "
       + "ORDER BY name ASC";
 
   private static final String SQL_DELETE =
-        "DELETE FROM cuentas_app "
+        "DELETE FROM electiva2 "
         + "WHERE id = ?";
 
   private final DataSource dataSource;

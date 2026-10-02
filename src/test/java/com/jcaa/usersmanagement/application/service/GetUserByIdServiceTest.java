@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.jcaa.usersmanagement.application.port.out.GetUserByIdPort;
+import com.jcaa.usersmanagement.application.port.out.ObtenerCuentaPorIdPort;
 import com.jcaa.usersmanagement.application.service.dto.query.GetUserByIdQuery;
 import com.jcaa.usersmanagement.domain.enums.UserRole;
 import com.jcaa.usersmanagement.domain.enums.UserStatus;
@@ -34,14 +34,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class GetUserByIdServiceTest {
 
-  @Mock private GetUserByIdPort getUserByIdPort;
+  @Mock private ObtenerCuentaPorIdPort ObtenerCuentaPorIdPort;
 
   private GetUserByIdService service;
 
   @BeforeEach
   void setUp() {
     try (final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory()) {
-      service = new GetUserByIdService(getUserByIdPort, validatorFactory.getValidator());
+      service = new GetUserByIdService(ObtenerCuentaPorIdPort, validatorFactory.getValidator());
     }
   }
 
@@ -62,7 +62,7 @@ class GetUserByIdServiceTest {
             UserRole.ADMIN,
             UserStatus.ACTIVE);
 
-    when(getUserByIdPort.getById(any())).thenReturn(Optional.of(expected));
+    when(ObtenerCuentaPorIdPort.getById(any())).thenReturn(Optional.of(expected));
 
     // Act
     final UserModel result = service.execute(query);
@@ -79,7 +79,7 @@ class GetUserByIdServiceTest {
     // Arrange
     final GetUserByIdQuery query = new GetUserByIdQuery("no-existe");
 
-    when(getUserByIdPort.getById(any())).thenReturn(Optional.empty());
+    when(ObtenerCuentaPorIdPort.getById(any())).thenReturn(Optional.empty());
 
     // Act & Assert
     assertThrows(UserNotFoundException.class, () -> service.execute(query));
@@ -95,6 +95,6 @@ class GetUserByIdServiceTest {
 
     // Act & Assert
     assertThrows(ConstraintViolationException.class, () -> service.execute(query));
-    verifyNoInteractions(getUserByIdPort);
+    verifyNoInteractions(ObtenerCuentaPorIdPort);
   }
 }

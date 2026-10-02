@@ -1,10 +1,10 @@
 package com.jcaa.usersmanagement.infrastructure.entrypoint.rest.controller;
 
-import com.jcaa.usersmanagement.application.port.in.CreateUserUseCase;
-import com.jcaa.usersmanagement.application.port.in.DeleteUserUseCase;
-import com.jcaa.usersmanagement.application.port.in.GetAllUsersUseCase;
-import com.jcaa.usersmanagement.application.port.in.GetUserByIdUseCase;
-import com.jcaa.usersmanagement.application.port.in.UpdateUserUseCase;
+import com.jcaa.usersmanagement.application.port.in.CrearCuentaUseCase;
+import com.jcaa.usersmanagement.application.port.in.EliminarCuentaUseCase;
+import com.jcaa.usersmanagement.application.port.in.ObtenerTodasLasCuentasUseCase;
+import com.jcaa.usersmanagement.application.port.in.ObtenerCuentaPorIdUseCase;
+import com.jcaa.usersmanagement.application.port.in.ActualizarCuentaUseCase;
 import com.jcaa.usersmanagement.application.service.dto.command.CreateUserCommand;
 import com.jcaa.usersmanagement.application.service.dto.command.DeleteUserCommand;
 import com.jcaa.usersmanagement.application.service.dto.command.UpdateUserCommand;
@@ -34,29 +34,29 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserRestController implements UserRestControllerDocs {
 
-  private final CreateUserUseCase createUserUseCase;
-  private final UpdateUserUseCase updateUserUseCase;
-  private final DeleteUserUseCase deleteUserUseCase;
-  private final GetUserByIdUseCase getUserByIdUseCase;
-  private final GetAllUsersUseCase getAllUsersUseCase;
+  private final CrearCuentaUseCase CrearCuentaUseCase;
+  private final ActualizarCuentaUseCase ActualizarCuentaUseCase;
+  private final EliminarCuentaUseCase EliminarCuentaUseCase;
+  private final ObtenerCuentaPorIdUseCase ObtenerCuentaPorIdUseCase;
+  private final ObtenerTodasLasCuentasUseCase ObtenerTodasLasCuentasUseCase;
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public UserRestResponse create(@Valid @RequestBody final CreateUserRestRequest request) {
     final CreateUserCommand command = UserRestMapper.toCreateCommand(request);
-    final UserModel user = createUserUseCase.execute(command);
+    final UserModel user = CrearCuentaUseCase.execute(command);
     return UserRestMapper.toResponse(user);
   }
 
   @GetMapping
   public List<UserRestResponse> getAll() {
-    return UserRestMapper.toResponseList(getAllUsersUseCase.execute());
+    return UserRestMapper.toResponseList(ObtenerTodasLasCuentasUseCase.execute());
   }
 
   @GetMapping("/{id}")
   public UserRestResponse getById(@PathVariable final String id) {
     final GetUserByIdQuery query = UserRestMapper.toGetByIdQuery(id);
-    final UserModel user = getUserByIdUseCase.execute(query);
+    final UserModel user = ObtenerCuentaPorIdUseCase.execute(query);
     return UserRestMapper.toResponse(user);
   }
 
@@ -65,7 +65,7 @@ public class UserRestController implements UserRestControllerDocs {
       @PathVariable final String id,
       @Valid @RequestBody final UpdateUserRestRequest request) {
     final UpdateUserCommand command = UserRestMapper.toUpdateCommand(id, request);
-    final UserModel user = updateUserUseCase.execute(command);
+    final UserModel user = ActualizarCuentaUseCase.execute(command);
     return UserRestMapper.toResponse(user);
   }
 
@@ -73,7 +73,7 @@ public class UserRestController implements UserRestControllerDocs {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(@PathVariable final String id) {
     final DeleteUserCommand command = UserRestMapper.toDeleteCommand(id);
-    deleteUserUseCase.execute(command);
+    EliminarCuentaUseCase.execute(command);
   }
 }
 

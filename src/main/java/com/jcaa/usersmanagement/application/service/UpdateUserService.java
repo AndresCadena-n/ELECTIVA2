@@ -1,9 +1,9 @@
 package com.jcaa.usersmanagement.application.service;
 
-import com.jcaa.usersmanagement.application.port.in.UpdateUserUseCase;
-import com.jcaa.usersmanagement.application.port.out.GetUserByEmailPort;
-import com.jcaa.usersmanagement.application.port.out.GetUserByIdPort;
-import com.jcaa.usersmanagement.application.port.out.UpdateUserPort;
+import com.jcaa.usersmanagement.application.port.in.ActualizarCuentaUseCase;
+import com.jcaa.usersmanagement.application.port.out.ObtenerCuentaPorEmailPort;
+import com.jcaa.usersmanagement.application.port.out.ObtenerCuentaPorIdPort;
+import com.jcaa.usersmanagement.application.port.out.ActualizarCuentaPort;
 import com.jcaa.usersmanagement.application.service.dto.command.UpdateUserCommand;
 import com.jcaa.usersmanagement.application.service.mapper.UserApplicationMapper;
 import com.jcaa.usersmanagement.domain.exception.UserAlreadyExistsException;
@@ -21,11 +21,11 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateUserService implements UpdateUserUseCase {
+public class UpdateUserService implements ActualizarCuentaUseCase {
 
-  private final UpdateUserPort updateUserPort;
-  private final GetUserByIdPort getUserByIdPort;
-  private final GetUserByEmailPort getUserByEmailPort;
+  private final ActualizarCuentaPort ActualizarCuentaPort;
+  private final ObtenerCuentaPorIdPort ObtenerCuentaPorIdPort;
+  private final ObtenerCuentaPorEmailPort ObtenerCuentaPorEmailPort;
   private final EmailNotificationService emailNotificationService;
   private final Validator validator;
 
@@ -41,7 +41,7 @@ public class UpdateUserService implements UpdateUserUseCase {
 
     final UserModel userToUpdate =
         UserApplicationMapper.fromUpdateCommandToModel(command, current.getPassword());
-    final UserModel updatedUser = updateUserPort.update(userToUpdate);
+    final UserModel updatedUser = ActualizarCuentaPort.update(userToUpdate);
 
     emailNotificationService.notifyUserUpdated(updatedUser);
 
@@ -56,13 +56,13 @@ public class UpdateUserService implements UpdateUserUseCase {
   }
 
   private UserModel findExistingUserOrFail(final UserId userId) {
-    return getUserByIdPort
+    return ObtenerCuentaPorIdPort
         .getById(userId)
         .orElseThrow(() -> UserNotFoundException.becauseIdWasNotFound(userId.value()));
   }
 
   private void ensureEmailIsNotTakenByAnotherUser(final UserEmail newEmail, final UserId ownerId) {
-    getUserByEmailPort
+    ObtenerCuentaPorEmailPort
         .getByEmail(newEmail)
         .ifPresent(
             found -> {

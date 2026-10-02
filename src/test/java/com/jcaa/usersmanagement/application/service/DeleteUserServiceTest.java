@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.jcaa.usersmanagement.application.port.out.DeleteUserPort;
-import com.jcaa.usersmanagement.application.port.out.GetUserByIdPort;
+import com.jcaa.usersmanagement.application.port.out.EliminarCuentaPort;
+import com.jcaa.usersmanagement.application.port.out.ObtenerCuentaPorIdPort;
 import com.jcaa.usersmanagement.application.service.dto.command.DeleteUserCommand;
 import com.jcaa.usersmanagement.domain.enums.UserRole;
 import com.jcaa.usersmanagement.domain.enums.UserStatus;
@@ -35,8 +35,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class DeleteUserServiceTest {
 
-  @Mock private DeleteUserPort deleteUserPort;
-  @Mock private GetUserByIdPort getUserByIdPort;
+  @Mock private EliminarCuentaPort EliminarCuentaPort;
+  @Mock private ObtenerCuentaPorIdPort ObtenerCuentaPorIdPort;
 
   private DeleteUserService service;
 
@@ -44,14 +44,14 @@ class DeleteUserServiceTest {
   void setUp() {
     try (final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory()) {
       service =
-          new DeleteUserService(deleteUserPort, getUserByIdPort, validatorFactory.getValidator());
+          new DeleteUserService(EliminarCuentaPort, ObtenerCuentaPorIdPort, validatorFactory.getValidator());
     }
   }
 
   // ── flujo feliz
 
   @Test
-  @DisplayName("execute() invoca deleteUserPort cuando el usuario existe")
+  @DisplayName("execute() invoca EliminarCuentaPort cuando el usuario existe")
   void shouldDeleteWhenUserExists() {
     // Arrange
     final DeleteUserCommand command = new DeleteUserCommand("u-001");
@@ -65,13 +65,13 @@ class DeleteUserServiceTest {
             UserRole.ADMIN,
             UserStatus.ACTIVE);
 
-    when(getUserByIdPort.getById(any())).thenReturn(Optional.of(existing));
+    when(ObtenerCuentaPorIdPort.getById(any())).thenReturn(Optional.of(existing));
 
     // Act
     service.execute(command);
 
     // Assert
-    verify(deleteUserPort).delete(new UserId("u-001"));
+    verify(EliminarCuentaPort).delete(new UserId("u-001"));
   }
 
   // ── usuario no encontrado
@@ -82,11 +82,11 @@ class DeleteUserServiceTest {
     // Arrange
     final DeleteUserCommand command = new DeleteUserCommand("no-existe");
 
-    when(getUserByIdPort.getById(any())).thenReturn(Optional.empty());
+    when(ObtenerCuentaPorIdPort.getById(any())).thenReturn(Optional.empty());
 
     // Act & Assert
     assertThrows(UserNotFoundException.class, () -> service.execute(command));
-    verify(deleteUserPort, never()).delete(any());
+    verify(EliminarCuentaPort, never()).delete(any());
   }
 
   // ── validación del command
@@ -99,6 +99,6 @@ class DeleteUserServiceTest {
 
     // Act & Assert
     assertThrows(ConstraintViolationException.class, () -> service.execute(command));
-    verifyNoInteractions(deleteUserPort, getUserByIdPort);
+    verifyNoInteractions(EliminarCuentaPort, ObtenerCuentaPorIdPort);
   }
 }

@@ -1,7 +1,7 @@
 package com.jcaa.usersmanagement.application.service;
 
-import com.jcaa.usersmanagement.application.port.in.GetAllUsersUseCase;
-import com.jcaa.usersmanagement.application.port.out.GetAllUsersPort;
+import com.jcaa.usersmanagement.application.port.in.ObtenerTodasLasCuentasUseCase;
+import com.jcaa.usersmanagement.application.port.out.ObtenerTodasLasCuentasPort;
 import com.jcaa.usersmanagement.domain.model.UserModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,12 +10,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class GetAllUsersService implements GetAllUsersUseCase {
+public class GetAllUsersService implements ObtenerTodasLasCuentasUseCase {
 
-  private final GetAllUsersPort getAllUsersPort;
+  private final ObtenerTodasLasCuentasPort ObtenerTodasLasCuentasPort;
 
   @Override
   public List<UserModel> execute() {
-    return getAllUsersPort.getAll();
+    return ObtenerTodasLasCuentasPort.getAll();
   }
 }

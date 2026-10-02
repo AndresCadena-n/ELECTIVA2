@@ -6,11 +6,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.jcaa.usersmanagement.application.port.in.CreateUserUseCase;
-import com.jcaa.usersmanagement.application.port.in.DeleteUserUseCase;
-import com.jcaa.usersmanagement.application.port.in.GetAllUsersUseCase;
-import com.jcaa.usersmanagement.application.port.in.GetUserByIdUseCase;
-import com.jcaa.usersmanagement.application.port.in.UpdateUserUseCase;
+import com.jcaa.usersmanagement.application.port.in.CrearCuentaUseCase;
+import com.jcaa.usersmanagement.application.port.in.EliminarCuentaUseCase;
+import com.jcaa.usersmanagement.application.port.in.ObtenerTodasLasCuentasUseCase;
+import com.jcaa.usersmanagement.application.port.in.ObtenerCuentaPorIdUseCase;
+import com.jcaa.usersmanagement.application.port.in.ActualizarCuentaUseCase;
 import com.jcaa.usersmanagement.application.service.dto.query.GetUserByIdQuery;
 import com.jcaa.usersmanagement.domain.enums.UserRole;
 import com.jcaa.usersmanagement.domain.enums.UserStatus;
@@ -50,11 +50,11 @@ class UserRestControllerTest {
 
   @Autowired private MockMvc mockMvc;
 
-  @MockBean private CreateUserUseCase createUserUseCase;
-  @MockBean private UpdateUserUseCase updateUserUseCase;
-  @MockBean private DeleteUserUseCase deleteUserUseCase;
-  @MockBean private GetUserByIdUseCase getUserByIdUseCase;
-  @MockBean private GetAllUsersUseCase getAllUsersUseCase;
+  @MockBean private CrearCuentaUseCase CrearCuentaUseCase;
+  @MockBean private ActualizarCuentaUseCase ActualizarCuentaUseCase;
+  @MockBean private EliminarCuentaUseCase EliminarCuentaUseCase;
+  @MockBean private ObtenerCuentaPorIdUseCase ObtenerCuentaPorIdUseCase;
+  @MockBean private ObtenerTodasLasCuentasUseCase ObtenerTodasLasCuentasUseCase;
   @MockBean private JwtTokenService jwtTokenService;
 
   @Test
@@ -70,7 +70,7 @@ class UserRestControllerTest {
             UserPassword.fromHash("$2a$12$abcdefghijklmnopqrstuuuuuuuuuuuuuuuuuuuuuuuuuuuuu"),
             UserRole.ADMIN,
             UserStatus.ACTIVE);
-    when(getUserByIdUseCase.execute(new GetUserByIdQuery(ID))).thenReturn(user);
+    when(ObtenerCuentaPorIdUseCase.execute(new GetUserByIdQuery(ID))).thenReturn(user);
 
     // Act & Assert
     mockMvc

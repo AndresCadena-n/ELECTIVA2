@@ -1,7 +1,7 @@
 package com.jcaa.usersmanagement.application.service;
 
-import com.jcaa.usersmanagement.application.port.in.CreateUserUseCase;
-import com.jcaa.usersmanagement.application.port.out.GetUserByEmailPort;
+import com.jcaa.usersmanagement.application.port.in.CrearCuentaUseCase;
+import com.jcaa.usersmanagement.application.port.out.ObtenerCuentaPorEmailPort;
 import com.jcaa.usersmanagement.application.port.out.GuardarCuentaPort;
 import com.jcaa.usersmanagement.application.service.dto.command.CreateUserCommand;
 import com.jcaa.usersmanagement.application.service.mapper.UserApplicationMapper;
@@ -20,10 +20,10 @@ import jakarta.validation.ConstraintViolation;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CreateUserService implements CreateUserUseCase {
+public class CreateUserService implements CrearCuentaUseCase {
 
   private final GuardarCuentaPort GuardarCuentaPort;
-  private final GetUserByEmailPort getUserByEmailPort;
+  private final ObtenerCuentaPorEmailPort ObtenerCuentaPorEmailPort;
   private final EmailNotificationService emailNotificationService;
   private final Validator validator;
 
@@ -50,7 +50,7 @@ public class CreateUserService implements CreateUserUseCase {
   }
 
   private void ensureEmailIsNotTaken(final UserEmail email) {
-    getUserByEmailPort
+    ObtenerCuentaPorEmailPort
         .getByEmail(email)
         .ifPresent(
             ignored -> {

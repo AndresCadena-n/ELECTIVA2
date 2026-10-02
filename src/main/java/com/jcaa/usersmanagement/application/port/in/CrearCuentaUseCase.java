@@ -5,6 +5,6 @@ import com.jcaa.usersmanagement.domain.model.UserModel;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
-public interface CreateUserUseCase {
+public interface CrearCuentaUseCase {
   UserModel execute(@NotNull @Valid CreateUserCommand command);
 }

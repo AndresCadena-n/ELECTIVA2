@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.jcaa.usersmanagement.application.port.out.GetUserByEmailPort;
+import com.jcaa.usersmanagement.application.port.out.ObtenerCuentaPorEmailPort;
 import com.jcaa.usersmanagement.application.port.out.SaveUserPort;
 import com.jcaa.usersmanagement.application.service.dto.command.CreateUserCommand;
 import com.jcaa.usersmanagement.domain.enums.UserRole;
@@ -36,7 +36,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class CreateUserServiceTest {
 
   @Mock private SaveUserPort saveUserPort;
-  @Mock private GetUserByEmailPort getUserByEmailPort;
+  @Mock private ObtenerCuentaPorEmailPort ObtenerCuentaPorEmailPort;
   @Mock private EmailNotificationService emailNotificationService;
 
   private CreateUserService service;
@@ -47,7 +47,7 @@ class CreateUserServiceTest {
       service =
           new CreateUserService(
               saveUserPort,
-              getUserByEmailPort,
+              ObtenerCuentaPorEmailPort,
               emailNotificationService,
               validatorFactory.getValidator());
     }
@@ -71,7 +71,7 @@ class CreateUserServiceTest {
             UserRole.ADMIN,
             UserStatus.PENDING);
 
-    when(getUserByEmailPort.getByEmail(any())).thenReturn(Optional.empty());
+    when(ObtenerCuentaPorEmailPort.getByEmail(any())).thenReturn(Optional.empty());
     when(saveUserPort.save(any())).thenReturn(savedUser);
 
     // Act
@@ -105,7 +105,7 @@ class CreateUserServiceTest {
             UserRole.MEMBER,
             UserStatus.ACTIVE);
 
-    when(getUserByEmailPort.getByEmail(any())).thenReturn(Optional.of(existing));
+    when(ObtenerCuentaPorEmailPort.getByEmail(any())).thenReturn(Optional.of(existing));
 
     // Act & Assert
     assertThrows(UserAlreadyExistsException.class, () -> service.execute(command));
@@ -125,6 +125,6 @@ class CreateUserServiceTest {
 
     // Act & Assert
     assertThrows(ConstraintViolationException.class, () -> service.execute(command));
-    verifyNoInteractions(saveUserPort, getUserByEmailPort, emailNotificationService);
+    verifyNoInteractions(saveUserPort, ObtenerCuentaPorEmailPort, emailNotificationService);
   }
 }

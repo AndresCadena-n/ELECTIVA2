@@ -4,6 +4,6 @@ import com.jcaa.usersmanagement.application.service.dto.command.DeleteUserComman
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
-public interface DeleteUserUseCase {
+public interface EliminarCuentaUseCase {
   void execute(@NotNull @Valid DeleteUserCommand command);
 }

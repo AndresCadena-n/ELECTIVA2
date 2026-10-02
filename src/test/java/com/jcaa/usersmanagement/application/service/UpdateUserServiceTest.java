@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.jcaa.usersmanagement.application.port.out.GetUserByEmailPort;
-import com.jcaa.usersmanagement.application.port.out.GetUserByIdPort;
-import com.jcaa.usersmanagement.application.port.out.UpdateUserPort;
+import com.jcaa.usersmanagement.application.port.out.ObtenerCuentaPorEmailPort;
+import com.jcaa.usersmanagement.application.port.out.ObtenerCuentaPorIdPort;
+import com.jcaa.usersmanagement.application.port.out.ActualizarCuentaPort;
 import com.jcaa.usersmanagement.application.service.dto.command.UpdateUserCommand;
 import com.jcaa.usersmanagement.domain.enums.UserRole;
 import com.jcaa.usersmanagement.domain.enums.UserStatus;
@@ -38,9 +38,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class UpdateUserServiceTest {
 
-  @Mock private UpdateUserPort updateUserPort;
-  @Mock private GetUserByIdPort getUserByIdPort;
-  @Mock private GetUserByEmailPort getUserByEmailPort;
+  @Mock private ActualizarCuentaPort ActualizarCuentaPort;
+  @Mock private ObtenerCuentaPorIdPort ObtenerCuentaPorIdPort;
+  @Mock private ObtenerCuentaPorEmailPort ObtenerCuentaPorEmailPort;
   @Mock private EmailNotificationService emailNotificationService;
 
   private UpdateUserService service;
@@ -56,9 +56,9 @@ class UpdateUserServiceTest {
     try (final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory()) {
       service =
           new UpdateUserService(
-              updateUserPort,
-              getUserByIdPort,
-              getUserByEmailPort,
+              ActualizarCuentaPort,
+              ObtenerCuentaPorIdPort,
+              ObtenerCuentaPorEmailPort,
               emailNotificationService,
               validatorFactory.getValidator());
     }
@@ -82,16 +82,16 @@ class UpdateUserServiceTest {
     final UpdateUserCommand command =
         new UpdateUserCommand(ID, "John Updated", EMAIL, null, "ADMIN", "ACTIVE");
 
-    when(getUserByIdPort.getById(any())).thenReturn(Optional.of(existingUser));
-    when(getUserByEmailPort.getByEmail(any())).thenReturn(Optional.of(existingUser));
-    when(updateUserPort.update(any())).thenReturn(existingUser);
+    when(ObtenerCuentaPorIdPort.getById(any())).thenReturn(Optional.of(existingUser));
+    when(ObtenerCuentaPorEmailPort.getByEmail(any())).thenReturn(Optional.of(existingUser));
+    when(ActualizarCuentaPort.update(any())).thenReturn(existingUser);
 
     // Act
     final UserModel result = service.execute(command);
 
     // Assert
     assertNotNull(result);
-    verify(updateUserPort).update(any(UserModel.class));
+    verify(ActualizarCuentaPort).update(any(UserModel.class));
     verify(emailNotificationService).notifyUserUpdated(existingUser);
   }
 
@@ -104,11 +104,11 @@ class UpdateUserServiceTest {
     final UpdateUserCommand command =
         new UpdateUserCommand("no-existe", "Name", "a@b.com", null, "MEMBER", "ACTIVE");
 
-    when(getUserByIdPort.getById(any())).thenReturn(Optional.empty());
+    when(ObtenerCuentaPorIdPort.getById(any())).thenReturn(Optional.empty());
 
     // Act & Assert
     assertThrows(UserNotFoundException.class, () -> service.execute(command));
-    verify(updateUserPort, never()).update(any());
+    verify(ActualizarCuentaPort, never()).update(any());
   }
 
   // ── email tomado por otro usuario
@@ -130,12 +130,12 @@ class UpdateUserServiceTest {
             UserRole.MEMBER,
             UserStatus.ACTIVE);
 
-    when(getUserByIdPort.getById(any())).thenReturn(Optional.of(existingUser));
-    when(getUserByEmailPort.getByEmail(any())).thenReturn(Optional.of(otherUser));
+    when(ObtenerCuentaPorIdPort.getById(any())).thenReturn(Optional.of(existingUser));
+    when(ObtenerCuentaPorEmailPort.getByEmail(any())).thenReturn(Optional.of(otherUser));
 
     // Act & Assert
     assertThrows(UserAlreadyExistsException.class, () -> service.execute(command));
-    verify(updateUserPort, never()).update(any());
+    verify(ActualizarCuentaPort, never()).update(any());
   }
 
   // ── email del mismo usuario: no debe lanzar excepción
@@ -147,13 +147,13 @@ class UpdateUserServiceTest {
     final UpdateUserCommand command =
         new UpdateUserCommand(ID, "John Updated", EMAIL, null, "ADMIN", "ACTIVE");
 
-    when(getUserByIdPort.getById(any())).thenReturn(Optional.of(existingUser));
-    when(getUserByEmailPort.getByEmail(any())).thenReturn(Optional.of(existingUser));
-    when(updateUserPort.update(any())).thenReturn(existingUser);
+    when(ObtenerCuentaPorIdPort.getById(any())).thenReturn(Optional.of(existingUser));
+    when(ObtenerCuentaPorEmailPort.getByEmail(any())).thenReturn(Optional.of(existingUser));
+    when(ActualizarCuentaPort.update(any())).thenReturn(existingUser);
 
     // Act & Assert
     assertDoesNotThrow(() -> service.execute(command));
-    verify(updateUserPort).update(any());
+    verify(ActualizarCuentaPort).update(any());
   }
 
   // ── validación del command
@@ -168,6 +168,6 @@ class UpdateUserServiceTest {
 
     // Act & Assert
     assertThrows(ConstraintViolationException.class, () -> service.execute(command));
-    verifyNoInteractions(updateUserPort, getUserByIdPort, getUserByEmailPort);
+    verifyNoInteractions(ActualizarCuentaPort, ObtenerCuentaPorIdPort, ObtenerCuentaPorEmailPort);
   }
 }

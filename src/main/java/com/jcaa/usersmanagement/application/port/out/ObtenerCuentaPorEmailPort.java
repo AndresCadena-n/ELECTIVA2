@@ -4,6 +4,6 @@ import com.jcaa.usersmanagement.domain.model.UserModel;
 import com.jcaa.usersmanagement.domain.valueobject.UserEmail;
 import java.util.Optional;
 
-public interface GetUserByEmailPort {
+public interface ObtenerCuentaPorEmailPort {
   Optional<UserModel> getByEmail(UserEmail email);
 }

@@ -9,7 +9,7 @@ CREATE DATABASE IF NOT EXISTS crud_usuarios
 
 USE crud_usuarios;
 
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS electiva2 (
     id          VARCHAR(36)  NOT NULL PRIMARY KEY,
     name        VARCHAR(100) NOT NULL,
     email       VARCHAR(150) NOT NULL UNIQUE,
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS users (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Usuario administrador inicial (password: Admin1234!)
-INSERT INTO users (id, name, email, password, role, status)
+INSERT INTO electiva2 (id, name, email, password, role, status)
 VALUES (
     '00000000-0000-0000-0000-000000000001',
     'Administrador',

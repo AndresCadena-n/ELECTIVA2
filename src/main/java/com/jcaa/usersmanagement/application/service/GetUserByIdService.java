@@ -1,7 +1,7 @@
 package com.jcaa.usersmanagement.application.service;
 
-import com.jcaa.usersmanagement.application.port.in.GetUserByIdUseCase;
-import com.jcaa.usersmanagement.application.port.out.GetUserByIdPort;
+import com.jcaa.usersmanagement.application.port.in.ObtenerCuentaPorIdUseCase;
+import com.jcaa.usersmanagement.application.port.out.ObtenerCuentaPorIdPort;
 import com.jcaa.usersmanagement.application.service.dto.query.GetUserByIdQuery;
 import com.jcaa.usersmanagement.application.service.mapper.UserApplicationMapper;
 import com.jcaa.usersmanagement.domain.exception.UserNotFoundException;
@@ -17,9 +17,9 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class GetUserByIdService implements GetUserByIdUseCase {
+public class GetUserByIdService implements ObtenerCuentaPorIdUseCase {
 
-  private final GetUserByIdPort getUserByIdPort;
+  private final ObtenerCuentaPorIdPort ObtenerCuentaPorIdPort;
   private final Validator validator;
 
   @Override
@@ -27,7 +27,7 @@ public class GetUserByIdService implements GetUserByIdUseCase {
     validateQuery(query);
 
     final UserId userId = UserApplicationMapper.fromGetUserByIdQueryToUserId(query);
-    return getUserByIdPort
+    return ObtenerCuentaPorIdPort
         .getById(userId)
         .orElseThrow(() -> UserNotFoundException.becauseIdWasNotFound(userId.value()));
   }

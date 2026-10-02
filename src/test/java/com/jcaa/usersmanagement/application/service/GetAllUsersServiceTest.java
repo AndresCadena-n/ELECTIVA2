@@ -3,7 +3,7 @@ package com.jcaa.usersmanagement.application.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.jcaa.usersmanagement.application.port.out.GetAllUsersPort;
+import com.jcaa.usersmanagement.application.port.out.ObtenerTodasLasCuentasPort;
 import com.jcaa.usersmanagement.domain.enums.UserRole;
 import com.jcaa.usersmanagement.domain.enums.UserStatus;
 import com.jcaa.usersmanagement.domain.model.UserModel;
@@ -28,13 +28,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class GetAllUsersServiceTest {
 
-  @Mock private GetAllUsersPort getAllUsersPort;
+  @Mock private ObtenerTodasLasCuentasPort ObtenerTodasLasCuentasPort;
 
   private GetAllUsersService service;
 
   @BeforeEach
   void setUp() {
-    service = new GetAllUsersService(getAllUsersPort);
+    service = new GetAllUsersService(ObtenerTodasLasCuentasPort);
   }
 
   // ── lista con usuarios
@@ -52,7 +52,7 @@ class GetAllUsersServiceTest {
             UserRole.ADMIN,
             UserStatus.ACTIVE);
 
-    when(getAllUsersPort.getAll()).thenReturn(List.of(user));
+    when(ObtenerTodasLasCuentasPort.getAll()).thenReturn(List.of(user));
 
     // Act
     final List<UserModel> result = service.execute();
@@ -70,7 +70,7 @@ class GetAllUsersServiceTest {
   @DisplayName("execute() retorna lista vacía cuando no hay usuarios")
   void shouldReturnEmptyListWhenNoUsers() {
     // Arrange
-    when(getAllUsersPort.getAll()).thenReturn(List.of());
+    when(ObtenerTodasLasCuentasPort.getAll()).thenReturn(List.of());
 
     // Act
     final List<UserModel> result = service.execute();

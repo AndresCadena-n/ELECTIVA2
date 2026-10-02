@@ -1,7 +1,7 @@
 package com.jcaa.usersmanagement.application.service;
 
-import com.jcaa.usersmanagement.application.port.in.LoginUseCase;
-import com.jcaa.usersmanagement.application.port.out.GetUserByEmailPort;
+import com.jcaa.usersmanagement.application.port.in.LoginCuentaUseCase;
+import com.jcaa.usersmanagement.application.port.out.ObtenerCuentaPorEmailPort;
 import com.jcaa.usersmanagement.application.service.dto.command.LoginCommand;
 import com.jcaa.usersmanagement.domain.enums.UserStatus;
 import com.jcaa.usersmanagement.domain.exception.InvalidCredentialsException;
@@ -17,9 +17,9 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class LoginService implements LoginUseCase {
+public class LoginService implements LoginCuentaUseCase {
 
-  private final GetUserByEmailPort getUserByEmailPort;
+  private final ObtenerCuentaPorEmailPort ObtenerCuentaPorEmailPort;
   private final Validator validator;
 
   @Override
@@ -43,7 +43,7 @@ public class LoginService implements LoginUseCase {
   }
 
   private UserModel findUserOrFailWithInvalidCredentials(final UserEmail email) {
-    return getUserByEmailPort
+    return ObtenerCuentaPorEmailPort
         .getByEmail(email)
         .orElseThrow(InvalidCredentialsException::becauseCredentialsAreInvalid);
   }
