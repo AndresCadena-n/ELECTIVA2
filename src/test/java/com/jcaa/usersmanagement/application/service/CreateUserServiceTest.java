@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.jcaa.usersmanagement.application.port.out.ObtenerCuentaPorEmailPort;
-import com.jcaa.usersmanagement.application.port.out.SaveUserPort;
+import com.jcaa.usersmanagement.application.port.out.GuardarCuentaPort;
 import com.jcaa.usersmanagement.application.service.dto.command.CreateUserCommand;
 import com.jcaa.usersmanagement.domain.enums.UserRole;
 import com.jcaa.usersmanagement.domain.enums.UserStatus;
@@ -35,7 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class CreateUserServiceTest {
 
-  @Mock private SaveUserPort saveUserPort;
+  @Mock private GuardarCuentaPort GuardarCuentaPort;
   @Mock private ObtenerCuentaPorEmailPort ObtenerCuentaPorEmailPort;
   @Mock private EmailNotificationService emailNotificationService;
 
@@ -46,7 +46,7 @@ class CreateUserServiceTest {
     try (final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory()) {
       service =
           new CreateUserService(
-              saveUserPort,
+              GuardarCuentaPort,
               ObtenerCuentaPorEmailPort,
               emailNotificationService,
               validatorFactory.getValidator());
@@ -72,7 +72,7 @@ class CreateUserServiceTest {
             UserStatus.PENDING);
 
     when(ObtenerCuentaPorEmailPort.getByEmail(any())).thenReturn(Optional.empty());
-    when(saveUserPort.save(any())).thenReturn(savedUser);
+    when(GuardarCuentaPort.save(any())).thenReturn(savedUser);
 
     // Act
     final UserModel result = service.execute(command);
@@ -83,7 +83,7 @@ class CreateUserServiceTest {
         () -> assertNotNull(result, "resultado no debe ser null"),
         () -> assertEquals("u-01", result.getId().value(), "id del usuario guardado"));
 
-    verify(saveUserPort).save(any(UserModel.class));
+    verify(GuardarCuentaPort).save(any(UserModel.class));
     verify(emailNotificationService).notifyUserCreated(savedUser, "Pass1234");
   }
 
@@ -109,7 +109,7 @@ class CreateUserServiceTest {
 
     // Act & Assert
     assertThrows(UserAlreadyExistsException.class, () -> service.execute(command));
-    verify(saveUserPort, never()).save(any());
+    verify(GuardarCuentaPort, never()).save(any());
     verify(emailNotificationService, never()).notifyUserCreated(any(), any());
   }
 
@@ -125,6 +125,6 @@ class CreateUserServiceTest {
 
     // Act & Assert
     assertThrows(ConstraintViolationException.class, () -> service.execute(command));
-    verifyNoInteractions(saveUserPort, ObtenerCuentaPorEmailPort, emailNotificationService);
+    verifyNoInteractions(GuardarCuentaPort, ObtenerCuentaPorEmailPort, emailNotificationService);
   }
 }
